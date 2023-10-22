@@ -13,6 +13,7 @@ public class ClearInteractor implements ClearInputBoundary {
 
     @Override
     public void execute(ClearInputData clearInputData) {
-        clearPresenter.prepareSuccessView(new ClearOutputData(userDataAccessInterface.clear()));
+        userDataAccessInterface.execute(clearInputData);
+        clearPresenter.prepareSuccessView(new ClearOutputData());
     }
 }
