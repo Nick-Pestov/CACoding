@@ -4,6 +4,7 @@ import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginState;
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.signup.SignupState;
+import use_case.clear_users.ClearInputData;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +15,7 @@ import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public class LoginView extends JPanel implements ActionListener, PropertyChangeListener {
+public class LoginView extends JPanel implements PropertyChangeListener {
 
     public final String viewName = "log in";
     private final LoginViewModel loginViewModel;
@@ -64,7 +65,11 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
                 }
         );
 
-        cancel.addActionListener(this);
+        cancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            }
+        });
 
         usernameInputField.addKeyListener(new KeyListener() {
             @Override
@@ -108,13 +113,6 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         this.add(passwordInfo);
         this.add(passwordErrorField);
         this.add(buttons);
-    }
-
-    /**
-     * React to a button click that results in evt.
-     */
-    public void actionPerformed(ActionEvent evt) {
-        System.out.println("Click " + evt.getActionCommand());
     }
 
     @Override

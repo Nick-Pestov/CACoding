@@ -1,8 +1,11 @@
 package view;
 
+import interface_adapter.clear_users.ClearController;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupState;
 import interface_adapter.signup.SignupViewModel;
+import use_case.clear_users.ClearInputData;
+import use_case.clear_users.ClearInteractor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +16,7 @@ import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public class SignupView extends JPanel implements ActionListener, PropertyChangeListener {
+public class SignupView extends JPanel implements PropertyChangeListener {
     public final String viewName = "sign up";
 
     private final SignupViewModel signupViewModel;
@@ -21,6 +24,7 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
     private final JPasswordField passwordInputField = new JPasswordField(15);
     private final JPasswordField repeatPasswordInputField = new JPasswordField(15);
     private final SignupController signupController;
+    private final ClearController clearController;
 
     private final JButton signUp;
     private final JButton cancel;
@@ -28,9 +32,10 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
     // TODO Note: this is the new JButton for clearing the users file
     private final JButton clear;
 
-    public SignupView(SignupController controller, SignupViewModel signupViewModel) {
+    public SignupView(SignupController controller, SignupViewModel signupViewModel, ClearController clearController) {
 
         this.signupController = controller;
+        this.clearController = clearController;
         this.signupViewModel = signupViewModel;
         signupViewModel.addPropertyChangeListener(this);
 
@@ -54,6 +59,7 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         //      a CLEAR_BUTTON_LABEL constant which is defined in the SignupViewModel class.
         //      You need to add this "clear" button to the "buttons" panel.
         clear = new JButton(SignupViewModel.CLEAR_BUTTON_LABEL);
+        buttons.add(clear); // I added this
 
         signUp.addActionListener(
                 // This creates an anonymous subclass of ActionListener and instantiates it.
@@ -61,30 +67,30 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
                     public void actionPerformed(ActionEvent evt) {
                         if (evt.getSource().equals(signUp)) {
                             SignupState currentState = signupViewModel.getState();
-
                             signupController.execute(
-                                    currentState.getUsername(),
-                                    currentState.getPassword(),
-                                    currentState.getRepeatPassword()
+                                currentState.getUsername(),
+                                currentState.getPassword(),
+                                currentState.getRepeatPassword()
                             );
                         }
                     }
                 }
         );
 
-        // TODO Add the body to the actionPerformed method of the action listener below
-        //      for the "clear" button. You'll need to write the controller before
-        //      you can complete this.
-        clear.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
+        clear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clearController.execute(new ClearInputData());
+            }
+        });
 
-                    }
-                }
-        );
-
-        cancel.addActionListener(this);
+        cancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // the cancel button in the main view closes the app:
+                System.exit(0);
+            }
+        });
 
         // This makes a new KeyListener implementing class, instantiates it, and
         // makes it listen to keystrokes in the usernameInputField.
@@ -158,13 +164,6 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         this.add(passwordInfo);
         this.add(repeatPasswordInfo);
         this.add(buttons);
-    }
-
-    /**
-     * React to a button click that results in evt.
-     */
-    public void actionPerformed(ActionEvent evt) {
-        JOptionPane.showConfirmDialog(this, "Cancel not implemented yet.");
     }
 
     @Override
